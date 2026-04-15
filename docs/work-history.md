@@ -1,0 +1,311 @@
+# 작업 히스토리
+
+이 문서는 프로젝트의 업무 연속성을 유지하기 위한 기록 파일이다. 새 세션에서는 `docs/99-session-continuity-guide.md`를 먼저 읽고, 이어서 이 문서를 읽어 최근 결정과 다음 작업을 확인한다.
+
+## 2026-04-15
+
+### 작업 요약
+
+- Unity Editor `6000.3.6f1` 설치를 확인했다.
+- `unity/TinyFactoryPrototype/` 위치에 Unity 6 URP 프로젝트를 생성했다.
+- Unity 템플릿의 `com.unity.inputsystem` `1.12.0`이 Unity `6000.3.6f1`에서 컴파일 에러를 내어 `1.17.0`으로 올렸다.
+- `CoplayDev/unity-mcp` 패키지를 추가하고, `Texture2D.EncodeToPNG()` 컴파일을 위해 `com.unity.modules.imageconversion` 내장 모듈을 명시했다.
+- Unity 배치 임포트에서 C# 컴파일 에러가 없는 상태를 확인했다.
+- `uv/uvx`를 WinGet으로 설치하고, Codex MCP 서버 `unityMCP`를 `http://localhost:8080/mcp`로 등록했다.
+- Unity Editor에서 MCP HTTP 서버가 자동 시작되도록 Editor 전용 스크립트를 추가했고, `127.0.0.1:8080` 리스닝 상태를 확인했다.
+- Unity 생성물 제외를 위해 `.gitignore`를 추가했다.
+- 프로젝트 초기 기획 문서 세트를 생성했다.
+- Eatventure를 구조적 레퍼런스로 삼되, 음식/레스토랑 운영을 전자/가전제품 생산, 조립, 판매, 자동화 게임으로 재해석하는 방향을 문서화했다.
+- Steam PC용 프로토타입으로 이동할 수 있을 만큼 초기 방향은 충분하다고 판단했다.
+- 기술 스택은 Unity 기반을 추천했다.
+- 사용자가 Unity 초보이며 AI 도움을 받아 바이브 코딩 방식으로 진행하고 싶다는 점을 확인했다.
+- 새 세션 연속성을 위해 본 지침 파일과 히스토리 파일을 생성했다.
+- 사용자의 승인에 따라 첫 Unity 프로토타입 범위 정의 문서를 생성했다.
+- Unity를 집에서 세팅해야 하므로, 세팅 전 2시간 동안 진행 가능한 준비 문서를 추가로 생성했다.
+- Unity 없이도 진행 가능한 추가 준비 작업으로 초보자 조작 가이드, 플레이테스트 기록 템플릿, 제품군 후보 문서를 생성했다.
+- 사용자의 제안에 따라 업장 성장 progression과 장기 제품 후보 100개 이상을 미리 브레인스토밍했다.
+- 현재 게임 가칭을 `Tiny Factory`로 정했다.
+- 루트 진입점으로 `README.md`를 복구하고, 핵심 결정/미결정 사항을 빠르게 확인하는 결정 로그를 생성했다.
+- Unity MCP 연결이 정상 동작함을 확인했다.
+- `Assets/_Project/` 아래에 첫 프로토타입용 폴더 구조를 생성했다.
+- `Assets/_Project/Scenes/Prototype_01_Workshop.unity` 씬을 생성하고 저장했다.
+- `Prototype_01_Workshop` 씬에 기본 루트 오브젝트, 고정 카메라, 방향 조명, 작업장 바닥, 경계벽, 중앙 작업 구역 플레이스홀더를 배치했다.
+- Play 모드 진입/종료를 확인했고, 이후 Console 에러/경고가 없는 상태를 확인했다.
+- 사용자의 지적에 따라 Eatventure 레퍼런스 이해를 바로잡았다. 핵심은 WASD 직접 이동이 아니라 스테이션 해금, 직원/캐셔/헬퍼, 팁/투자자/보상, 자동화와 업그레이드를 통한 운영 성장으로 정리했다.
+- `docs/06-eatventure-reference-analysis.md`를 추가해 Eatventure 기본 시스템, 주변 시스템, Tiny Factory 치환 방향을 기록했다.
+- 첫 프로토타입 방향을 직접 조작에서 자동 작업 중심으로 수정했다. 플레이어는 공장 운영자이고, 작업자와 스테이션이 자동으로 부품 운반, 조립, 판매를 수행한다.
+- 새 세션에서 README만 읽어도 작업을 이어갈 수 있도록 `README.md`를 단일 진입점 형태로 전면 갱신했다.
+- 마일스톤 2 자동 작업 루프 골격을 구현했다.
+- `Prototype_01_Workshop` 씬에 `PartBin`, `AssemblyBench`, `SellCounter` 스테이션 플레이스홀더를 배치했다.
+- `Worker_01` 작업자 캡슐을 만들고 `WorkerController`를 연결해 `PartBin -> AssemblyBench -> SellCounter` 경로를 반복 이동하게 했다.
+- 작업자 이동 속도는 `1.65`, 스테이션 대기 시간은 `0.55`초로 설정했다.
+- Play 모드에서 Unity `EditorApplication.Step()`으로 프레임을 진행해 작업자가 세 스테이션을 순회하는 것을 확인했다.
+- Console 에러는 없고, MCP 자동 시작 로그 1건만 남은 상태를 확인했다.
+- 마일스톤 2 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M2.png`를 생성했다.
+- 사용자의 추가 지시에 따라 카메라 기준을 수직 탑다운 고정 뷰로 확정했다.
+- 스테이지별 시작 첫 작업자는 플레이어 고유 작업자로 정리했다.
+- 스테이지 클리어 등으로 보상 상자를 열고, 나온 장비를 고유 작업자에게 장착하는 장기 메타 방향을 추가했다.
+- 장비 부위와 성장 구조는 Eatventure를 참고하되 직접 복제하지 않으며, 장비 조합 기능도 장기 구현 후보로 정리했다.
+- 문서 중복을 줄이기 위해 `README.md`는 진입점, `docs/22-decision-log.md`는 결정 요약, `docs/12-meta-progression-design.md`는 장비/상자/조합 상세, `docs/05-design-document-roadmap.md`는 문서 역할 기준으로 재정리했다.
+- 마일스톤 3 아이템 운반과 스테이션 처리 골격을 구현했다.
+- `ISelectable`, `StationSelectionController`, `StationSelectable`, `ItemType`, `Item`, `CarryHolder`를 추가했다.
+- `Operator` 루트 오브젝트를 생성하고 `StationSelectionController`를 붙였다.
+- `PartBin`, `AssemblyBench`, `SellCounter`에 `StationSelectable`과 클릭용 `BoxCollider`를 붙였다.
+- 프로젝트가 새 Input System을 사용하므로 `StationSelectionController` 입력 처리를 `UnityEngine.InputSystem.Mouse` 기준으로 작성했다.
+- `Worker_01`을 `PlayerWorker_01`로 정리하고 `CarryHolder` 및 `CarryHoldPoint`를 추가했다.
+- `PartItem_Placeholder`, `ProductItem_Placeholder`를 씬에 배치하고 부품/제품 구분용 머티리얼을 추가했다.
+- Play 모드에서 `Part Bin` 선택이 `StationSelectionController`에 잡히고, 기존 작업자 순회 이동이 유지되는 것을 확인했다.
+- Console 에러 0건을 확인했다.
+- 마일스톤 3 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M3.png`를 생성했다.
+- 마일스톤 4 생산 루프를 구현했다.
+- `PartBin`은 작업자 `CarryHolder`에 `Basic Gadget Part`를 생성해 싣는다.
+- `AssemblyBench`는 부품을 받아 `2.5`초 조립 타이머를 진행하고 `Basic Gadget` 제품을 생성한다.
+- `SellCounter`는 제품을 받아 판매 수량을 올리고 `MoneyManager`에 `5` 돈을 더한다.
+- `WorkerController`를 단순 순회 이동에서 `MoveToPartBin -> MoveToAssemblyBench -> WaitForProduct -> MoveToSellCounter` 상태 머신으로 바꿨다.
+- 스테이션 선택 상태 텍스트가 실제 스테이션 상태 제공자(`IStationStatusProvider`)를 통해 표시되도록 연결했다.
+- Play 모드에서 첫 판매 후 `money=5`, `sold=1`이 되는 것을 확인했다.
+- `SellCounter` 선택 시 상태가 `Sale value: 5 / Sold: 1`로 표시되는 것을 확인했다.
+- Console 에러 0건을 확인했다.
+- 마일스톤 4 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M4.png`를 생성했다.
+- 마일스톤 5 UI와 업그레이드를 구현했다.
+- `HudController`를 추가해 돈, 선택 스테이션, 선택 상태, 조립대 상태, 업그레이드 버튼, 업그레이드 메시지를 한 패널에 표시했다.
+- `UpgradeManager`를 추가해 선택 스테이션 레벨업, 조립 속도 업그레이드, 판매가 업그레이드를 처리하게 했다.
+- `AssemblyBench`에 스테이션 레벨, 조립 속도 레벨, 조립 시간 감소 업그레이드를 추가했다.
+- `SellCounter`에 스테이션 레벨, 판매가 레벨, 판매가 증가 업그레이드를 추가했다.
+- 기존 `MoneyManager`와 `StationSelectionController`의 임시 디버그 패널은 새 HUD와 중복되지 않도록 껐다.
+- Play 모드에서 돈이 없을 때 업그레이드가 실패하고 `Not enough money. Need 20.` 메시지가 표시되는 것을 확인했다.
+- 검증용으로 돈을 지급한 뒤 선택 스테이션 레벨업, 조립 속도 업그레이드, 판매가 업그레이드가 모두 성공하는 것을 확인했다.
+- 업그레이드 후 수치는 `assemblyLv=2`, `speedLv=2`, `assemblySeconds=1.88`, `sellLv=2`, `saleLv=2`, `saleValue=9`로 반영됐다.
+- 업그레이드 후 다음 판매에서 돈이 `35 -> 44`로 `+9` 증가하는 것을 확인했다.
+- Console 에러 0건을 확인했다.
+- 마일스톤 5 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M5.png`를 생성했다.
+- 사용자의 지적에 따라 Eatventure식 업그레이드/해금 비용이 `K`, `M` 단위까지 커지는 비용 스케일링 방향을 코드에 반영했다.
+- `MoneyFormatter`를 추가해 돈과 비용을 `950`, `1.2K`, `2.5M`처럼 표시한다.
+- `UpgradeCostCalculator`를 추가해 `baseCost * growthRate^(level-1)` 기반으로 업그레이드 비용을 계산한다.
+- `UpgradeManager`의 임시 비용 증가 방식인 `+10`, `x1.5` 누적 필드를 제거하고, 현재 레벨 기반 비용 계산으로 교체했다.
+- Play 모드에서 스테이션 레벨업 비용이 `2.6K`, `504K`, `299M`까지 증가하는 것을 확인했다.
+- 돈 부족 메시지도 `Not enough money. Need 299M.`처럼 단위 포맷을 사용하도록 확인했다.
+- Console 에러 0건을 확인했다.
+- 비용 커브 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_CostCurve.png`를 생성했다.
+- 마일스톤 6 확장 자동화와 보조 시스템 슬롯을 구현했다.
+- `WorkerManager`를 추가해 직원 구매 비용, 작업자 수, 작업자 처리량 업그레이드 비용, 작업자 이동 속도 증가를 관리하게 했다.
+- `HudController`에 `Hire Worker`, `Worker Throughput` 버튼과 작업자 수/속도 표시를 추가했다.
+- `WorkerController`에 런타임 초기화 메서드를 추가하고, 여러 작업자가 같은 조립대를 공유해도 제품 대기/회수와 부품 투입이 막히지 않도록 상태 전환을 보강했다.
+- `SupportBonusSlots`를 추가해 팁 보너스, 임시 헬퍼 슬롯, 장비 이동 속도 보너스, 장비 판매가 보너스 확장 지점을 만들었다.
+- Play 모드에서 돈을 지급한 뒤 직원 2명을 추가 구매하고 작업자 처리량 업그레이드를 적용했다.
+- 검증 결과 `workerCount=3`, `sceneWorkers=3`, `speed=1.90`, `nextHire=164`, `nextThroughput=53`, `soldDelta=3`으로 확인됐다.
+- Console 에러 0건을 확인했다.
+- 마일스톤 6 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M6.png`를 생성했다.
+- 마일스톤 7 1차 플레이테스트를 진행했다.
+- 5분 상당 자동 테스트를 두 가지 플레이 전략으로 진행했다.
+- 싼 업그레이드 우선 플레이에서는 첫 부품 획득 `0.4초`, 첫 조립 시작 `2.8초`, 첫 제품 완성 `5.6초`, 첫 판매 `8.8초`, 첫 업그레이드 `22.8초`로 측정됐다.
+- 싼 업그레이드 우선 플레이는 5분 후 판매 `23회`, 조립대 레벨 `5`, 조립 시간 `1.17초`였지만 직원 구매에는 도달하지 못했다.
+- 직원 구매 우선 플레이에서는 첫 판매 `8.8초`, 첫 직원 구매 `158.8초`, 첫 업그레이드 `178.0초`로 측정됐다.
+- 직원 구매 우선 플레이는 5분 후 판매 `27회`, 직원 `2명`, 판매가 `8`, 조립 시간 `1.90초`였다.
+- 게이머 관점 결론은 "기술 루프는 안정적으로 작동하지만, 초반 목표 설계와 보상 피드백이 약하다"로 정리했다.
+- 마일스톤 8로 바로 넘어가기 전에 `마일스톤 7A: 1차 튜닝 패스`를 추가하기로 했다.
+- 1차 튜닝 목표는 첫 직원 구매 비용 조정, 초반 추천 목표 표시, 판매 피드백 추가, 부품/제품 플레이스홀더 개선, 튜닝 후 재테스트다.
+- Console 에러 0건을 확인했다.
+- 마일스톤 7 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M7_Playtest.png`를 생성했다.
+- 플레이테스트 로그 `docs/23-playtest-2026-04-15-m7.md`를 생성했다.
+- 사용자의 지적에 따라 Eatventure의 테이블 대기 손님/서버 배달 구조가 전자제품 품목에는 어색하다는 점을 반영했다.
+- 첫 스테이지는 테이블 손님 대신 `CustomerOrderCounter`에 주문이 쌓이고, 완성품을 `PickupCounter`에 전달하면 픽업/출고 완료로 돈이 지급되는 구조로 전환했다.
+- `OrderCounter`를 추가해 고객 주문 대기열을 생성하고, 작업자는 주문이 있을 때만 부품을 가져가 제작을 시작하게 했다.
+- `PickupCounter`를 추가하고 기존 `SellCounter` 씬 오브젝트를 `PickupCounter`로 재해석했다.
+- `WorkerController`, `WorkerManager`, `UpgradeManager`를 `SellCounter` 기준에서 `OrderCounter`/`PickupCounter` 기준으로 변경했다.
+- Play 모드에서 첫 주문 처리 완료가 `7.6초`에 발생하고, 돈이 `5`, 픽업 완료 수가 `1`로 증가하는 것을 확인했다.
+- `Pickup Counter` 선택 상태가 `Lv 1 / Pickup value: 5 / Done: 1`로 표시되는 것을 확인했다.
+- Console 에러 0건을 확인했다.
+- 주문/픽업 구조 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_OrderPickup.png`를 생성했다.
+- 마일스톤 7A 1차 튜닝 패스를 완료했다.
+- 첫 직원 구매 기본 비용을 `60`에서 `40`으로 낮췄다.
+- `HudController`에 초반 추천 목표, 목표 진행 바, 첫 직원 구매 전 `Hire Worker - Goal` 라벨을 추가했다.
+- `PickupCounter`에 픽업 완료 이벤트를 추가하고, HUD에서 픽업 완료 시 `+$` 플로팅 피드백을 표시하게 했다.
+- `ItemVisualFactory`를 추가해 런타임 부품을 회로기판 형태로, 제품을 보조배터리 형태로 생성하게 했다.
+- 씬의 정적 `PartItem_Placeholder`, `ProductItem_Placeholder`를 각각 `CircuitBoardPart_Placeholder`, `PowerBankProduct_Placeholder` 복합 형태로 바꿨다.
+- 5분 상당 자동 재테스트에서 첫 픽업/출고 완료 `9.6초`, 첫 직원 구매 `114.6초`, 첫 직원 구매 후 첫 업그레이드 `148.8초`, 5분 후 픽업 완료 `25회`, 작업자 `2명`을 확인했다.
+- Console 에러 0건을 확인했다.
+- 마일스톤 7A 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M7A_Tuning.png`를 생성했다.
+- 마일스톤 7A 재테스트 로그 `docs/24-playtest-2026-04-15-m7a.md`를 생성했다.
+- 마일스톤 8 장기 메타 시스템 후보를 구체화했다.
+- 첫 장비 슬롯은 `Head`, `Body`, `Tool` 3부위로 시작하는 기준을 정했다.
+- 보상 상자는 스테이지 클리어, 첫 자동화 목표, 생산 목표, 챌린지 목표, 이벤트 납품 완료 보상으로 분류했다.
+- 첫 스테이지 클리어 조건 초안은 `픽업/출고 완료 30회 + 직원 2명 보유`, 보상은 `Basic Box 1개`로 정리했다.
+- 장비 장착 UI는 고유 작업자 중심의 `Worker Gear` 화면으로 시작하고, 드래그 앤 드롭 없이 선택 후 `Equip` 버튼으로 장착하는 흐름으로 정리했다.
+- 장비 조합은 같은 장비 3개를 같은 장비 레벨 +1로 합치는 단순 규칙부터 시작하기로 했다.
+- `EquipmentDefinition`, `EquipmentInstance`, `RewardBoxDefinition`, `RewardEntry`, `PlayerMetaState` 데이터 구조 초안을 정리했다.
+- 단일 조립대 병목을 다음 실험으로 넘기기 위해 마일스톤 9 2차 자동화 확장 후보를 작업 보드에 추가했다.
+- 마일스톤 9 2차 자동화 확장 후보를 완료했다.
+- 단일 조립대 병목을 풀기 위한 첫 실험으로 자동 설비보다 두 번째 조립대를 선택했다.
+- `FacilityManager`를 추가해 잠긴 설비 구매를 관리하게 했다.
+- 씬에 `AssemblyBench_02`를 잠긴 상태로 배치하고, HUD에 `Build Assembly Bench` 버튼과 설비 수 표시를 추가했다.
+- `WorkerController`를 여러 조립대 중 완성품이 있거나 비어 있는 곳을 선택하도록 보강했다.
+- `WorkerManager`가 활성 조립대 목록을 새 작업자와 기존 작업자에게 전달하도록 보강했다.
+- 두 번째 조립대 비용은 첫 테스트 후 너무 늦게 열려 `70`에서 `45`로 조정했다.
+- 5분 상당 자동 재테스트에서 첫 직원 구매 `115.2초`, 두 번째 조립대 구매 `216.0초`, 두 번째 조립대 구매 후 첫 픽업/출고 완료 `229.2초`, 5분 후 픽업/출고 완료 `25회`, 작업자 `2명`, 활성 조립대 `2/2`를 확인했다.
+- 7분 상당 확인에서는 픽업/출고 완료 `36회`, 작업자 `2명`, 활성 조립대 `2/2`를 확인했다.
+- Console 에러 0건을 확인했다.
+- 마일스톤 9 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M9_SecondBench_Tuned.png`를 생성했다.
+- 마일스톤 9 재테스트 로그 `docs/25-playtest-2026-04-15-m9.md`를 생성했다.
+- 초기 결론: 두 번째 조립대는 정상 작동하지만 5분 처리량 증가가 제한적이므로, 주문 생성 속도, 최대 주문 수, 작업자 회수/투입 우선순위 병목을 다음 후보로 봤다.
+- 사용자의 지적에 따라 마일스톤 9의 병목 해석을 수정했다. Eatventure의 음식 레벨업처럼 제품 자체의 레벨업/단가 성장 축이 빠져 있어, 생산량 확장이 경제 체감으로 이어지지 않는 것이 더 핵심적인 문제로 판단했다.
+- `docs/10-economy-and-progression-design.md`를 추가해 제품 레벨업, 출고 가치 성장, 비용 커브, 추천 목표 순서, `ProductProgressionManager` 구현 구조를 정리했다.
+- 마일스톤 10을 기존 주문 생성/작업자 우선순위 튜닝 중심에서 제품 레벨업과 단가 성장 구현으로 재정의했다.
+- `docs/06-eatventure-reference-analysis.md`, `docs/15-prototype-scope-definition.md`, `docs/16-technical-design-brief.md`, `docs/18-prototype-task-board.md`, `docs/22-decision-log.md`, `README.md`에 제품 레벨업 경제 축을 연결했다.
+- 새 세션 또는 PC 재부팅 후 Unity MCP 연결을 빠르게 복구할 수 있도록 `README.md`에 `Unity MCP 재연결 절차`를 추가했다.
+
+### 생성한 파일
+
+- `docs/00-project-charter.md`
+- `docs/01-initial-game-concept.md`
+- `docs/02-research-plan.md`
+- `docs/03-reference-extraction-framework.md`
+- `docs/04-theme-translation-guide.md`
+- `docs/05-design-document-roadmap.md`
+- `docs/99-session-continuity-guide.md`
+- `docs/work-history.md`
+- `docs/15-prototype-scope-definition.md`
+- `docs/16-technical-design-brief.md`
+- `docs/17-unity-setup-checklist.md`
+- `docs/18-prototype-task-board.md`
+- `docs/19-unity-beginner-operations-guide.md`
+- `docs/20-playtest-log-template.md`
+- `docs/08-product-theme-options.md`
+- `docs/09-business-progression-design.md`
+- `docs/21-product-catalog-brainstorm.md`
+- `README.md`
+- `docs/22-decision-log.md`
+- `.gitignore`
+- `unity/TinyFactoryPrototype/`
+- `unity/TinyFactoryPrototype/Assets/_Project/Editor/TinyFactoryMcpAutoStart.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scenes/Prototype_01_Workshop.unity`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_WorkshopFloor.mat`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_BoundaryWall.mat`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_WorkZone.mat`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_Backdrop.mat`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M1.png`
+- `docs/06-eatventure-reference-analysis.md`
+- `README.md` 단일 진입점 최신화
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Workers/WorkerController.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_PartBin.mat`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_AssemblyBench.mat`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_SellCounter.mat`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_Worker.mat`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_WorkerDetail.mat`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M2.png`
+- `docs/12-meta-progression-design.md`
+- `docs/05-design-document-roadmap.md` 문서 역할 기준으로 재작성
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Interaction/ISelectable.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Interaction/StationSelectionController.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Stations/StationSelectable.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Items/ItemType.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Items/Item.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Items/CarryHolder.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_PartItem.mat`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_ProductItem.mat`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M3.png`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Stations/IStationStatusProvider.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Stations/PartBin.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Stations/AssemblyBench.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Stations/SellCounter.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Economy/MoneyManager.cs`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M4.png`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Economy/UpgradeManager.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/UI/HudController.cs`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M5.png`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Economy/MoneyFormatter.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Economy/UpgradeCostCalculator.cs`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_CostCurve.png`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Workers/WorkerManager.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Core/SupportBonusSlots.cs`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M6.png`
+- `docs/23-playtest-2026-04-15-m7.md`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M7_Playtest.png`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Stations/OrderCounter.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Stations/PickupCounter.cs`
+- `unity/TinyFactoryPrototype/Assets/_Project/Art/Materials/M_OrderCounter.mat`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_OrderPickup.png`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Items/ItemVisualFactory.cs`
+- `docs/24-playtest-2026-04-15-m7a.md`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M7A_Tuning.png`
+- `unity/TinyFactoryPrototype/Assets/_Project/Scripts/Economy/FacilityManager.cs`
+- `docs/25-playtest-2026-04-15-m9.md`
+- `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M9_SecondBench_Tuned.png`
+- `docs/10-economy-and-progression-design.md`
+
+### 결정된 사항
+
+- 목표 플랫폼은 Steam PC로 둔다.
+- 기본 레퍼런스는 Eatventure이나, 표면 모사가 아니라 구조적 원리 추출만 허용한다.
+- 핵심 테마는 전자/가전제품 생산, 조립, 판매, 자동화다.
+- 현재 단계는 문서 중심 초기 기획에서 프로토타입 범위 정의 단계로 넘어갈 수 있다.
+- 추천 기술 스택은 Unity, C#, URP, 수직 탑다운 3D다.
+- 초기 프로토타입에는 Steamworks 연동을 넣지 않는다.
+- Steam 연동은 출시 준비 단계에서 Steamworks.NET을 우선 검토한다.
+- 새 세션에서는 `README.md`를 진입점으로 읽고, 필요 시 `docs/99-session-continuity-guide.md`를 확인한다.
+- 의미 있는 작업 후에는 `docs/work-history.md`를 업데이트한다.
+- 중대한 방향 결정이나 사용자 의도가 불명확한 경우 AI가 혼자 추측하지 않고 반드시 사용자에게 되묻는다.
+- 첫 프로토타입은 최종 게임의 축소판이 아니라 핵심 루프 검증용으로 만든다.
+- 첫 프로토타입의 최소 루프는 작업자 자동 부품 운반, 조립, 판매, 돈 획득, 스테이션 업그레이드, 추가 직원 또는 자동화 설비 구매다.
+- 플레이어는 WASD/E로 직접 캐릭터를 조종하지 않는다. 스테이션 클릭과 UI 버튼으로 해금, 레벨업, 업그레이드, 직원 구매를 수행한다.
+- 첫 프로토타입에서는 Steamworks, 저장, 여러 제품군, 메타 진행, 최종 아트, 정교한 밸런스를 제외한다.
+- 첫 프로토타입 기술 구조는 Unity 6 LTS, C#, URP, 수직 탑다운 3D, uGUI 우선, 저장/Steam 제외를 기준으로 한다.
+- 게임 가칭은 `Tiny Factory`다. 의미는 "내 컴퓨터 속 작은 공장"이며, 최종 출시명 확정 전까지는 상표/Steam 중복 검토가 필요하다.
+- Unity 프로젝트 폴더명은 저장소 안 `unity/TinyFactoryPrototype/` 구조를 추천한다.
+- 실제 Unity 버전은 `6000.3.6f1`이다.
+- 실제 Unity 프로젝트 경로는 `E:\tiny-factory-main\unity\TinyFactoryPrototype`이다.
+- Codex MCP 서버 이름은 `unityMCP`, URL은 `http://localhost:8080/mcp`다.
+- Unity MCP HTTP 서버는 로컬 루프백 `127.0.0.1:8080`에서 실행되도록 설정했다.
+- 첫 씬 이름은 `Prototype_01_Workshop`을 추천한다.
+- `Prototype_01_Workshop`은 첫 프로토타입의 기준 씬으로 생성 완료했다.
+- 마일스톤 2 기준 자동 작업 루프 골격은 완료했다. 아직 실제 아이템 운반, 생산 처리, 판매 수익은 구현하지 않았다.
+- 마일스톤 3 기준 스테이션 선택, 작업자 운반 슬롯, 부품/제품 플레이스홀더는 완료했다. 아직 실제 생산 처리, 판매 수익은 구현하지 않았다.
+- 마일스톤 4 기준 첫 생산 루프는 완료했다. 작업자 1명이 부품을 가져와 조립하고 제품을 판매해 돈을 증가시킨다.
+- 마일스톤 5 기준 HUD와 1차 업그레이드는 완료했다. 아직 추가 직원 구매와 보조 시스템 슬롯은 구현하지 않았다.
+- 업그레이드 비용은 임시 선형 증가가 아니라 레벨 기반 성장 커브와 `K/M` 단위 표시를 기준으로 한다.
+- 마일스톤 6 기준 추가 작업자 구매, 작업자 처리량 업그레이드, 보조 시스템 확장 슬롯은 완료했다.
+- 마일스톤 7 기준 1차 플레이테스트를 완료하고, 그 결과로 마일스톤 7A 1차 튜닝 패스를 추가했다.
+- 마일스톤 7A 기준 첫 직원 구매 시간은 `114.6초`로 목표 범위 `90~120초`를 충족했다.
+- 마일스톤 8 기준 장기 메타 첫 슬롯은 `Head`, `Body`, `Tool` 3부위로 둔다.
+- 마일스톤 8 기준 첫 상자 보상은 스테이지 클리어와 생산 목표 달성으로 지급한다.
+- 마일스톤 8 기준 첫 장비 조합은 같은 장비 3개를 같은 장비 레벨 +1로 합치는 방식부터 시작한다.
+- 마일스톤 9 기준 두 번째 조립대 해금은 완료했지만, 처리량과 수익 체감은 제한적이었다. 사용자 지적에 따라 다음은 주문 튜닝보다 제품 레벨업/단가 성장 축을 먼저 구현한다.
+- 마일스톤 10 기준 제품 레벨업은 핵심 경제 축이며, 같은 픽업/출고 1회당 수익을 올려 직원/설비 구매 시간을 압축해야 한다.
+- 고객/주문 구조는 테이블 손님과 서버 배달이 아니라 주문 접수, 제작, 픽업/출고 완료를 기준으로 한다.
+- 카메라는 수직 탑다운 고정 뷰를 기준으로 한다.
+- 스테이지별 시작 첫 작업자는 플레이어 고유 작업자다.
+- 장기 메타 시스템은 스테이지 보상 상자, 고유 작업자 장비 장착, 장비 조합을 포함하는 방향으로 둔다.
+- 장비 슬롯과 조합식은 Eatventure의 구조를 참고하되, 마일스톤 8 기준 첫 구현은 `Head`, `Body`, `Tool` 3부위와 같은 장비 3개 조합 규칙으로 시작한다.
+- 첫 제품 후보는 보조배터리를 1순위로 추천한다. 구현 직전 사용자가 스마트폰 또는 임시 `Basic Gadget`을 선호하는지 확인한다.
+- 장기 업장 progression은 전자제품 악세사리 판매점에서 시작해 수리점, 리퍼비시 샵, 브랜드 AS점, 온라인 주문 처리 센터, 소형 조립 공장, 자동화 생산 라인, 스마트 가전 공장, 글로벌 납품 허브, 연구 개발 캠퍼스로 확장하는 방향을 추천한다.
+- 첫 프로토타입 배경은 "전자제품 악세사리 판매점 안쪽의 작은 조립 코너"로 보는 것이 현재 가장 자연스럽다.
+- 장기 제품 후보는 120개를 1차 브레인스토밍했으며, 이후 업장 단계별 해금표와 제품별 부품/공정 매핑이 필요하다.
+
+### 아직 미정인 사항
+
+- 최종 아트 표현 방식
+- uGUI와 UI Toolkit 중 초기 UI 선택
+- 첫 제품군
+- 첫 공장/스테이지 콘셉트
+- 아트 스타일
+- Steam 상품 전략
+- 추가 장비 슬롯 도입 여부
+- Epic 이상 장비 등급 체계와 설계도 기반 조합식
+- 스테이지별 실제 보상 상자 지급 빈도
+- 제품 레벨업 비용/가치 성장 커브의 최종 튜닝 범위
+
+### 다음 작업 후보
+
+1. `docs/18-prototype-task-board.md`의 마일스톤 10: 제품 레벨업과 단가 성장을 진행한다.
+2. `ProductProgressionManager`를 구현한다.
+3. `PickupCounter`가 제품 레벨 기반 출고 가치를 사용하게 한다.
+4. HUD에 `Level Power Bank` 버튼과 추천 목표 순서를 반영한다.
+5. 제품 레벨업 적용 후 5분 수익과 두 번째 조립대 구매 시간을 재테스트한다.
+
+### 사용자 선호 및 지시
+
+- 출력은 한국어를 선호한다.
+- 구현보다 문서와 방향 정리를 먼저 중시한다.
+- 다만 현재는 프로토타입 제작으로 이동하는 것이 우선이라고 판단하고 있다.
+- AI가 중대한 사항을 혼자 판단하지 말고, 의도가 애매하면 반드시 되묻기를 원한다.
+- 세션이 바뀌어도 업무 연속성을 유지할 수 있는 지침 파일을 먼저 읽고 이어서 작업하기를 선호한다.
