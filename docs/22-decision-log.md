@@ -36,7 +36,25 @@
 | 보상 상자 1차 기준 | 스테이지 클리어와 생산 목표 달성 보상으로 지급 |
 | 장비 조합 1차 기준 | 같은 장비 3개를 같은 장비 레벨 +1로 합침 |
 | 2차 자동화 확장 1차 선택 | 자동 설비보다 두 번째 조립대를 먼저 실험 |
-| 현재 추가 병목 판단 | 두 번째 조립대만으로는 부족하며 제품 단가 성장 부재가 자동화 체감을 약하게 만듦 |
+| 현재 추가 병목 판단 | 제품 단가 성장은 보강됐고, 다음 병목은 주문 생성보다 작업자 타깃 충돌과 이동 효율 쪽이 더 유력함 |
+| 마일스톤 12 주문 기준 | `OrderCounter`가 `Standard / Rush / Bulk` 주문을 순환 생성하고, `Rush > Bulk > Standard` 우선순위와 주문 보너스 정산을 사용함 |
+| 마일스톤 12 출고 기준 | `PickupCounter`는 즉시 정산 대신 `Dispatch` 큐를 거쳐 정산하고, 작업자는 하차 후 바로 복귀함 |
+| 마일스톤 13 첫 설비 후보 | 주문/출고 구조와 직접 연결되는 `Dispatch Rack`을 유지하고, 값은 코드 기준 `cost 10 / bonus +4` 등으로 정규화해 5분 조기 구매 효율 `214 / 33`을 확보함 |
+| 마일스톤 14 스테이지 기준 | `StageGoalManager`가 `출고 수 + 작업자 수 + 설비 수` 목표를 추적하고, `Workshop 1` 클리어 보상으로 `Basic Box 1개`를 지급한 뒤 다음 스테이지로 진행함 |
+| 마일스톤 15 장비 기준 | `EquipmentManager`가 `Basic Box`를 결정적 장비 시퀀스로 열고, `Head / Body / Tool` 슬롯 장착과 첫 작업자 강화 흐름을 관리함 |
+| 마일스톤 15 첫 장비 효과 | `Body`는 첫 작업자 이동 속도, `Head`는 출고 가치 배율, `Tool`은 부품 투입 시 조립 속도 배율에 우선 연결함 |
+| 마일스톤 16 조합 기준 | `EquipmentManager`가 `같은 장비 + 같은 레벨` 3개를 소모해 `레벨 +1` 장비 1개를 만들고, 장착 중 장비가 재료에 포함되면 결과를 같은 슬롯에 자동 재장착함. 레벨당 효과는 기본값의 `+50%`씩 증가함 |
+| 마일스톤 17 장비 UX 기준 | `Worker Gear`는 현재 장착 총합 보너스와 각 장비 그룹의 `Next Lv` 효과를 보여 주고, 인벤토리는 `Head -> Body -> Tool` 순으로 정렬하며 조합 버튼은 `2/3`, `Lv 2`, `Max`처럼 현재 상태를 직접 표시함 |
+| 마일스톤 18 추가 보상 기준 | `StageGoalManager`는 스테이지 클리어 외에 `Output 50` 생산 보상을 추적하고, 출고 `50회` 도달 시 `Basic Box 1개`를 추가 지급해 장비 획득 루프를 이어감 |
+| 마일스톤 19 실측 기준 | 추가 생산 보상을 `Output 50/55/60/66/72/78`까지 확장해 `Body/Tool/Head` 공통 장비 3종을 모두 검증 가능하게 하고, 배치 러너는 `Body` 이동 속도, `Tool` 실제 조립 시간, `Head` 실제 출고 금액을 상태 파일로 기록함 |
+| 마일스톤 20 `Advanced Box` 기준 | `StageGoalManager`는 후반 생산 목표 `Output 84/90/96`에서 `Advanced Box`를 지급하고, `EquipmentManager`의 `Advanced Box`는 `Uncommon` 장비 위주 시퀀스만 열어 `Basic Box`와 보상 성격을 분리함 |
+| 마일스톤 21 `Uncommon` 루프 기준 | `StageGoalManager`는 후반 생산 목표를 `Output 132`까지 확장해 `Advanced Box` 총 `9개`를 지급하고, 이로써 `Lift Harness / Smart Driver / Scan Visor`를 각각 `3개`씩 모아 `Lv 2` 조합까지 도달할 수 있게 함 |
+| 마일스톤 22 `Rare` 도입 기준 | `EquipmentManager`는 `Quality Headset / Servo Frame / Precision Rig` 3종의 `Rare` 장비를 추가하고, `Advanced Box`는 첫 `9개` `Uncommon` 루프 뒤에 `Rare` 루프로 이어지도록 확장함 |
+| 마일스톤 23 `Rare` 루프 기준 | `StageGoalManager`는 후반 생산 목표를 `Output 186`까지 확장해 `Advanced Box` 총 `18개`를 지급하고, 이로써 `Rare` 장비 3종도 각각 `3개`씩 모아 `Lv 2` 조합까지 도달할 수 있게 함 |
+| 마일스톤 24 후반 HUD 기준 | `StageGoalManager`는 생산 보상 완료 수와 다음 목표까지 남은 출고 수를 요약하고, `EquipmentManager`는 `Basic/Advanced Box` 다음 장비와 희귀도 구간을 HUD에 바로 보여 줌 |
+| 마일스톤 25 `Rare` 효과 기준 | `Rare` 장비는 기존 주 효과 외에 보조 효과 1개를 더 가지며, 첫 구현은 `Quality Headset = Pickup + Assembly`, `Servo Frame = Move + Pickup`, `Precision Rig = Assembly + Move` 조합으로 둠 |
+| 마일스톤 26 `Premium Box` 기준 | `StageGoalManager`는 `Output 192/198/204`에서 `Premium Box`를 지급하고, `EquipmentManager`의 `Premium Box`는 `Rare` 3종 중심 시퀀스로 열어 상위 보상 축을 분리함 |
+| 마일스톤 27 `Blueprint` 준비 기준 | `Premium Box`는 해당 부위 `Rare` 장비와 함께 같은 부위 `Blueprint` 조각 1개를 누적하고, HUD는 `Head / Body / Tool`별 `0/3` 또는 `Ready` 상태를 보여 줌 |
 | 첫 프로토타입 제외 항목 | Steamworks, 저장, 여러 제품군, 장비/상자/조합 구현, 이벤트, 최종 아트, WASD 직접 이동 |
 | 작업 기록 원칙 | 의미 있는 작업 후 `docs/work-history.md` 업데이트 |
 | 새 세션 시작 원칙 | `README.md`로 현재 상태를 보고, 필요 시 `docs/99-session-continuity-guide.md` 확인 |

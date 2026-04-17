@@ -132,11 +132,161 @@
 | 상태 | 작업 | 완료 기준 |
 | --- | --- | --- |
 | DONE | 제품 레벨업 경제 축 설계 문서 반영 | `docs/10-economy-and-progression-design.md`에 기준이 정리됨 |
-| TODO | `ProductProgressionManager` 구현 | 제품 레벨, 출고 가치, 레벨업 비용이 코드에서 계산됨 |
-| TODO | 픽업/출고 가치 연결 | `PickupCounter`가 제품 레벨 기반 가치를 사용함 |
-| TODO | HUD 제품 레벨업 버튼 추가 | `Level Power Bank` 버튼과 다음 비용이 표시됨 |
-| TODO | 추천 목표 순서 변경 | 첫 직원 후 제품 Lv 2~3, 두 번째 조립대 순서로 안내됨 |
-| TODO | 제품 레벨업 재테스트 | 단가 상승 후 5분 수익과 두 번째 조립대 구매 시간이 기록됨 |
+| DONE | `ProductProgressionManager` 구현 | 제품 레벨, 출고 가치, 레벨업 비용이 코드에서 계산됨 |
+| DONE | 픽업/출고 가치 연결 | `PickupCounter`가 제품 레벨 기반 가치를 사용함 |
+| DONE | HUD 제품 레벨업 버튼 추가 | `Level Power Bank` 버튼과 다음 비용이 표시됨 |
+| DONE | 추천 목표 순서 변경 | 첫 직원 후 제품 Lv 2~3, 두 번째 조립대 순서로 안내됨 |
+| DONE | 제품 레벨업 재테스트 | 단가 상승 후 5분 수익과 두 번째 조립대 구매 시간이 기록됨 |
+
+## 마일스톤 11: 작업자 운영 고도화
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 작업자 역할 분리 | 2명 이상일 때 부품 투입 우선 / 완성품 회수 우선 역할이 구분됨 |
+| DONE | 작업자 타깃 충돌 최소화 | 여러 작업자가 같은 조립대를 중복 타깃해서 낭비하는 일이 줄어듦 |
+| DOING | 회수/투입 우선순위 보강 | 완성품이 쌓인 조립대가 즉시 방치되지 않음 |
+| DONE | 이동 효율 계측 | 5분 테스트에서 작업자 상태 분포와 병목 위치가 다시 기록됨 |
+| DOING | 마일스톤 11 재테스트 | 현재 5분 자동 테스트 기준 보유 금액 `135`, 완료 `30`을 기록했고 추가 보강 후 확정함 |
+
+## 마일스톤 12: 주문/출고 시스템 확장
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 주문 규칙 확장 | `Standard / Rush / Bulk` 주문이 순환 생성되고, 동시 주문 수와 주문 유지 방식이 확장됨 |
+| DONE | 주문 우선순위 실험 | `Rush > Bulk > Standard` 순서로 먼저 처리할 주문 판단 규칙이 생김 |
+| DONE | 출고 구조 확장 | 픽업 후 `Dispatch` 대기 단계를 거쳐 정산되고, 주문 보너스가 함께 반영됨 |
+| DONE | 마일스톤 12 재테스트 | 5분 자동 테스트 2회 기준 보유 금액 `149`, 완료 `30`, 주문 보너스 수익 `11`, 출고 큐 `0`이 재현됨 |
+
+## 마일스톤 13: 설비 확장 2차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 다음 설비 방향 결정 | 주문/출고 구조와 직접 연결되는 `Dispatch Rack`으로 확정됨 |
+| DONE | 신규 설비 구현 | 씬에서 `Dispatch Rack` 플레이스홀더가 보이고 동작함 |
+| DONE | 설비 해금/구매 연결 | HUD와 기존 경제 흐름에서 구매 가능함 |
+| DONE | 마일스톤 13 재테스트 | `Dispatch Rack` 기본값을 코드에서 정규화한 뒤 5분 자동 테스트 2회 기준 `145.999초` 구매, `177.999초` 두 번째 조립대, 보유 금액 `214`, 완료 `33`이 재현됨 |
+
+## 마일스톤 14: 스테이지 목표와 보상 연결
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 스테이지 목표 구조 추가 | `StageGoalManager`가 출고 수, 직원 수, 설비 수, `Dispatch Rack` 여부를 추적함 |
+| DONE | 첫 보상 상자 지급 연결 | `Workshop 1` 클리어 시 `Basic Box x1`이 지급되고 다음 스테이지로 넘어감 |
+| DONE | HUD 목표 표시 확장 | 현재 스테이지 진행도와 누적 `Basic Box` 보상이 보임 |
+| DONE | 마일스톤 14 재테스트 | 5분 자동 테스트에서 `Workshop 1` 클리어 후 `Workshop 2`와 `Basic Box x1`이 확인됨 |
+
+## 마일스톤 15: 장비 메타 1차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 장비 슬롯 UI 구현 | HUD `Worker Gear`에 `Head`, `Body`, `Tool` 슬롯과 보유 장비 목록이 보임 |
+| DONE | 장비 장착 흐름 구현 | `Basic Box`를 열어 얻은 장비를 슬롯에 장착 가능함 |
+| DONE | 첫 장비 효과 연결 | `Body` 장비가 첫 작업자 이동 속도에 실제 반영됨 |
+| DONE | 마일스톤 15 재테스트 | `Workshop 1 -> Basic Box -> Work Apron 장착 -> 이동 속도 1.8975 -> 2.0493` 흐름이 확인됨 |
+
+## 마일스톤 16: 장비 조합 1차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 장비 중복 누적 흐름 구현 | 같은 장비가 여러 개 쌓이고 인벤토리에서 구분됨 |
+| DONE | 장비 조합 규칙 구현 | 같은 장비 3개를 같은 장비 +1로 합칠 수 있음 |
+| DONE | 조합 결과 수치 재적용 | 조합 후 강화된 장비 효과가 작업자/스테이션에 반영됨 |
+| DONE | 마일스톤 16 재테스트 | 상자 개봉 -> 중복 장비 누적 -> 조합 -> 강화 효과 적용이 동작함 |
+
+## 마일스톤 17: 장비 UX/밸런스 1차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 총 장비 보너스 요약 표시 | HUD `Worker Gear`에서 현재 장착 합계 `Move / Pickup / Assembly` 보너스가 보임 |
+| DONE | 인벤토리 정렬과 조합 가독성 정리 | 장비 그룹이 `Head -> Body -> Tool` 순으로 정렬되고 `2/3`, `Lv 2`, `Max` 같은 조합 상태가 바로 보임 |
+| DONE | 다음 레벨 효과 미리보기 | 각 장비 그룹 아래에 `Next Lv` 효과가 표시돼 조합 가치 판단이 가능함 |
+| DONE | 마일스톤 17 검증 | 배치 검증에서 `Equipped bonus`, `Next Lv`, `1/3` 조합 라벨이 상태 파일로 확인됨 |
+
+## 마일스톤 18: 추가 생산 보상 상자
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 생산 목표 보상 구조 추가 | `StageGoalManager`가 스테이지 클리어 외에 추가 생산 목표 보상을 추적함 |
+| DONE | 첫 추가 보상 연결 | `Dispatch 50` 도달 시 `Basic Box x1`이 지급됨 |
+| DONE | HUD 생산 보상 표시 | HUD에 현재 생산 보상 목표 진행도가 표시됨 |
+| DONE | 마일스톤 18 재테스트 | 배치 검증에서 `productionRewardCount=1`, `completed=50`, `toolLv1Copies=1`이 확인됨 |
+
+## 마일스톤 19: `Tool`/`Head` 실측 검증
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 추가 생산 보상 확장 | `Output 50/55/60/66/72/78` 보상으로 `Body/Tool/Head` 공통 장비 3종을 모두 획득 가능함 |
+| DONE | 조립 시간 실측 포인트 추가 | `AssemblyBench`가 마지막 완료 조립 시간을 기록하고 배치 러너가 `Tool Lv 1/2` 실제 조립 시간을 남김 |
+| DONE | 출고 금액 실측 포인트 추가 | `PickupCounter`가 마지막 출고 금액을 기록하고 배치 러너가 `Head Lv 1/2` 실제 출고 금액을 남김 |
+| DONE | 마일스톤 19 재테스트 | 배치 검증에서 `Tool 2.500 -> 2.273 -> 2.174`, `Head Rush 18 -> 19`, `Body 1.650 -> 1.782 -> 1.848`이 확인됨 |
+
+## 마일스톤 20: `Advanced Box`와 `Uncommon` 보상 루프
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | `Advanced Box` 보상 구조 추가 | `StageGoalManager`가 `Advanced Box` 카운트와 지급/소비 흐름을 가짐 |
+| DONE | `Advanced Box` 장비 풀 추가 | `EquipmentManager`가 `Lift Harness / Smart Driver / Scan Visor` 중심 시퀀스로 `Advanced Box`를 열 수 있음 |
+| DONE | HUD `Advanced Box` 개봉 버튼 추가 | `Worker Gear`에서 `Open Advanced Box` 버튼과 보유 수량이 보임 |
+| DOING | 마일스톤 20 확인 | 현재 열린 Unity에서 `Advanced Box` 개봉과 `Uncommon` 장비 획득 흐름을 수동 확인함 |
+
+## 마일스톤 21: `Uncommon` 조합 루프 1차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | `Advanced Box` 누적 구간 확장 | 생산 목표 `Output 84~132` 구간에서 `Advanced Box` 총 9개를 얻을 수 있음 |
+| DONE | `Uncommon` 3종 조합 가능 수량 확보 | `Lift Harness / Smart Driver / Scan Visor`를 각각 3개씩 모을 수 있음 |
+| DOING | 마일스톤 21 확인 | 현재 열린 Unity에서 `Advanced Box` 반복 개봉 후 `Uncommon` 장비 3종이 `Lv 2` 조합 가능한지 확인함 |
+
+## 마일스톤 22: `Rare` 장비 1차 도입
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | `Rare` 장비 3종 추가 | `EquipmentManager`에 `Head / Body / Tool`용 `Rare` 장비가 각각 1종씩 존재함 |
+| DONE | `Advanced Box` 후반 시퀀스 확장 | 첫 `9개`는 `Uncommon`, 이후 `9개`는 `Rare` 위주 시퀀스로 이어짐 |
+| DONE | 장비 목록 가독성 보강 | 인벤토리/슬롯 요약에 희귀도 라벨이 보이고, 정렬은 같은 슬롯 안에서 높은 희귀도가 먼저 보임 |
+| DOING | 마일스톤 22 확인 | 현재 열린 Unity에서 `Advanced Box` 후반 개봉 시 `Rare` 장비가 실제로 등장하는지 확인함 |
+
+## 마일스톤 23: `Rare` 조합 루프 1차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 후반 생산 목표 확장 | 생산 목표 `Output 138~186` 구간에서 `Advanced Box`를 추가로 얻을 수 있음 |
+| DONE | `Rare` 3종 조합 가능 수량 확보 | `Rare` 장비 3종을 각각 `3개`씩 모아 `Lv 2` 조합 가능 구간까지 도달함 |
+| DOING | 마일스톤 23 확인 | 현재 열린 Unity에서 `Rare` 장비 3종이 `Lv 2` 조합 가능한지 확인함 |
+
+## 마일스톤 24: 후반 보상 가독성 1차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 생산 보상 루프 요약 추가 | HUD에서 현재 생산 보상 완료 수와 다음 목표까지 남은 출고 수를 바로 볼 수 있음 |
+| DONE | 상자 다음 보상 미리보기 추가 | `Worker Gear`에서 `Basic Box`, `Advanced Box`의 다음 장비와 희귀도 구간을 볼 수 있음 |
+| DOING | 마일스톤 24 확인 | 현재 열린 Unity에서 후반 `Rare` 루프가 HUD 문자열로 자연스럽게 읽히는지 확인함 |
+
+## 마일스톤 25: `Rare` 다중 효과 1차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 장비 정의 다중 효과 지원 | `EquipmentManager`가 장비의 주 효과와 보조 효과를 함께 처리할 수 있음 |
+| DONE | `Rare` 3종 보조 효과 추가 | `Quality Headset / Servo Frame / Precision Rig`가 각자 보조 효과 1개를 더 가짐 |
+| DONE | HUD 문자열 다중 효과 표시 | 장비 슬롯/인벤토리/미리보기에 `Move / Pickup / Assembly` 복수 효과가 함께 표시됨 |
+| DOING | 마일스톤 25 확인 | 현재 열린 Unity에서 `Rare` 장착 시 총합 보너스가 예상대로 함께 오르는지 확인함 |
+
+## 마일스톤 26: `Premium Box` 기초
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | `Premium Box` 카운트/소비 구조 추가 | `StageGoalManager`가 `Premium Box` 지급과 소비를 관리함 |
+| DONE | 후반 `Premium Box` 생산 목표 추가 | `Output 192/198/204` 구간에서 `Premium Box`를 얻을 수 있음 |
+| DONE | `Premium Box` 개봉 흐름 추가 | `EquipmentManager`와 HUD에서 `Premium Box`를 열 수 있음 |
+| DOING | 마일스톤 26 확인 | 현재 열린 Unity에서 `Premium Box`가 실제로 지급되고 `Rare` 장비를 여는지 확인함 |
+
+## 마일스톤 27: `Blueprint` 준비 자원 1차
+
+| 상태 | 작업 | 완료 기준 |
+| --- | --- | --- |
+| DONE | 부위별 `Blueprint` 조각 카운트 추가 | `EquipmentManager`가 `Head / Body / Tool` 설계도 조각을 따로 추적함 |
+| DONE | `Premium Box`와 `Blueprint` 연결 | `Premium Box`를 열면 해당 부위 `Blueprint` 조각이 함께 누적됨 |
+| DONE | HUD `Epic Prep` 요약 추가 | `Worker Gear`에서 부위별 `Blueprint 0/3` 또는 `Ready` 상태를 볼 수 있음 |
+| DOING | 마일스톤 27 확인 | 현재 열린 Unity에서 `Premium Box` 개봉 후 `Blueprint` 진행도가 실제로 올라가는지 확인함 |
 
 ## 우선순위 규칙
 

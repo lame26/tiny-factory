@@ -34,6 +34,20 @@ namespace TinyFactory.Items
             return item;
         }
 
+        public static Item CreatePackedProduct(string itemName, Material baseMaterial, Vector3 scale)
+        {
+            GameObject root = new GameObject(itemName);
+            root.transform.localScale = scale;
+
+            CreateBlock(root.transform, "Box", new Vector3(1f, 0.5f, 0.72f), Vector3.zero, baseMaterial, new Color(0.88f, 0.74f, 0.42f));
+            CreateBlock(root.transform, "Tape", new Vector3(0.18f, 0.54f, 0.76f), new Vector3(0f, 0.02f, 0f), null, new Color(0.92f, 0.9f, 0.72f));
+            CreateBlock(root.transform, "Label", new Vector3(0.34f, 0.08f, 0.22f), new Vector3(-0.18f, 0.16f, 0.18f), null, new Color(0.14f, 0.18f, 0.24f));
+
+            Item item = root.AddComponent<Item>();
+            item.Configure(ItemType.PackagedProduct, itemName);
+            return item;
+        }
+
         private static GameObject CreateBlock(Transform parent, string name, Vector3 localScale, Vector3 localPosition, Material material, Color fallbackColor)
         {
             GameObject block = GameObject.CreatePrimitive(PrimitiveType.Cube);

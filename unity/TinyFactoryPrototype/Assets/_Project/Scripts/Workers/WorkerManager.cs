@@ -1,6 +1,7 @@
 using TinyFactory.Economy;
 using TinyFactory.Items;
 using TinyFactory.Stations;
+using TinyFactory.Core;
 using UnityEngine;
 
 namespace TinyFactory.Workers
@@ -12,15 +13,18 @@ namespace TinyFactory.Workers
         [SerializeField] private PartBin partBin;
         [SerializeField] private AssemblyBench assemblyBench;
         [SerializeField] private AssemblyBench[] assemblyBenches;
+        [SerializeField] private PackingStation packingStation;
         [SerializeField] private PickupCounter pickupCounter;
+        [SerializeField] private SupportBonusSlots supportBonusSlots;
+        [SerializeField] private FactoryBoostManager factoryBoostManager;
         [SerializeField] private Transform workersRoot;
         [SerializeField] private Material workerMaterial;
-        [SerializeField] private int hireWorkerBaseCost = 40;
-        [SerializeField] private float hireWorkerCostGrowth = 1.65f;
-        [SerializeField] private int workerThroughputBaseCost = 35;
-        [SerializeField] private float workerThroughputCostGrowth = 1.5f;
+        [SerializeField] private int hireWorkerBaseCost = 32;
+        [SerializeField] private float hireWorkerCostGrowth = 1.48f;
+        [SerializeField] private int workerThroughputBaseCost = 24;
+        [SerializeField] private float workerThroughputCostGrowth = 1.34f;
         [SerializeField] private float baseMoveSpeed = 1.65f;
-        [SerializeField] private float speedBonusPerLevel = 0.15f;
+        [SerializeField] private float speedBonusPerLevel = 0.2f;
         [SerializeField] private int workerThroughputLevel = 1;
         [SerializeField] private int hiredWorkerCount = 1;
         [SerializeField] private string lastMessage = "Worker automation ready";
@@ -31,6 +35,7 @@ namespace TinyFactory.Workers
         public int WorkerThroughputCost => UpgradeCostCalculator.Calculate(workerThroughputBaseCost, workerThroughputCostGrowth, workerThroughputLevel);
         public float WorkerMoveSpeed => baseMoveSpeed * (1f + (workerThroughputLevel - 1) * speedBonusPerLevel);
         public string LastMessage => lastMessage;
+        public string WorkerRoleSummary => BuildWorkerRoleSummary();
 
         private void Awake()
         {
@@ -64,6 +69,21 @@ namespace TinyFactory.Workers
                 pickupCounter = FindFirstObjectByType<PickupCounter>();
             }
 
+            if (packingStation == null)
+            {
+                packingStation = FindFirstObjectByType<PackingStation>();
+            }
+
+            if (supportBonusSlots == null)
+            {
+                supportBonusSlots = FindFirstObjectByType<SupportBonusSlots>();
+            }
+
+            if (factoryBoostManager == null)
+            {
+                factoryBoostManager = FactoryBoostManager.GetOrCreate();
+            }
+
             if (workersRoot == null)
             {
                 GameObject workersObject = GameObject.Find("Workers");
@@ -86,6 +106,27 @@ namespace TinyFactory.Workers
             WorkerController[] existingWorkers = FindObjectsByType<WorkerController>(FindObjectsSortMode.None);
             hiredWorkerCount = Mathf.Max(1, existingWorkers.Length);
             ApplyWorkerStats();
+        }
+
+        private void OnEnable()
+        {
+            if (factoryBoostManager == null)
+            {
+                factoryBoostManager = FactoryBoostManager.GetOrCreate();
+            }
+
+            if (factoryBoostManager != null)
+            {
+                factoryBoostManager.BoostStateChanged += HandleBoostStateChanged;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (factoryBoostManager != null)
+            {
+                factoryBoostManager.BoostStateChanged -= HandleBoostStateChanged;
+            }
         }
 
         public bool TryHireWorker()
@@ -145,7 +186,9 @@ namespace TinyFactory.Workers
             carryHolder.SetHoldPoint(holdPoint.transform);
 
             WorkerController workerController = workerObject.AddComponent<WorkerController>();
-            workerController.Initialize(orderCounter, partBin, GetActiveAssemblyBenches(), pickupCounter, carryHolder, WorkerMoveSpeed);
+            workerController.Initialize(orderCounter, partBin, GetActiveAssemblyBenches(), packingStation, pickupCounter, carryHolder, GetWorkerMoveSpeedForIndex(workerIndex - 1));
+            workerController.SetEquipmentAssemblySpeedMultiplier(GetWorkerAssemblySpeedMultiplierForIndex(workerIndex - 1));
+            workerController.SetAssignment(GetAssignmentForIndex(workerIndex - 1, hiredWorkerCount));
         }
 
         public void SetAssemblyBenches(AssemblyBench[] targetAssemblyBenches)
@@ -165,6 +208,17 @@ namespace TinyFactory.Workers
             }
         }
 
+        public void SetPackingStation(PackingStation targetPackingStation)
+        {
+            packingStation = targetPackingStation;
+
+            WorkerController[] workers = FindObjectsByType<WorkerController>(FindObjectsSortMode.None);
+            for (int i = 0; i < workers.Length; i++)
+            {
+                workers[i].SetPackingStation(packingStation);
+            }
+        }
+
         private Vector3 GetSpawnPosition(int workerIndex)
         {
             Vector3 origin = partBin != null ? partBin.WorkPoint.position : Vector3.zero;
@@ -176,11 +230,67 @@ namespace TinyFactory.Workers
         private void ApplyWorkerStats()
         {
             WorkerController[] workers = FindObjectsByType<WorkerController>(FindObjectsSortMode.None);
+            System.Array.Sort(workers, (left, right) => string.Compare(left.name, right.name, System.StringComparison.Ordinal));
             for (int i = 0; i < workers.Length; i++)
             {
-                workers[i].MoveSpeed = WorkerMoveSpeed;
+                workers[i].MoveSpeed = GetWorkerMoveSpeedForIndex(i);
+                workers[i].SetEquipmentAssemblySpeedMultiplier(GetWorkerAssemblySpeedMultiplierForIndex(i));
                 workers[i].SetAssemblyBenches(GetActiveAssemblyBenches());
+                workers[i].SetPackingStation(packingStation);
+                workers[i].SetAssignment(GetAssignmentForIndex(i, workers.Length));
             }
+        }
+
+        public void RefreshWorkerStats()
+        {
+            ApplyWorkerStats();
+        }
+
+        private WorkerController.WorkerAssignment GetAssignmentForIndex(int workerIndex, int totalWorkers)
+        {
+            if (totalWorkers <= 1)
+            {
+                return WorkerController.WorkerAssignment.Flexible;
+            }
+
+            if (workerIndex == 0)
+            {
+                return WorkerController.WorkerAssignment.PartSupplier;
+            }
+
+            if (workerIndex == 1)
+            {
+                return WorkerController.WorkerAssignment.PickupRunner;
+            }
+
+            return WorkerController.WorkerAssignment.Flexible;
+        }
+
+        private string BuildWorkerRoleSummary()
+        {
+            WorkerController[] workers = FindObjectsByType<WorkerController>(FindObjectsSortMode.None);
+            System.Array.Sort(workers, (left, right) => string.Compare(left.name, right.name, System.StringComparison.Ordinal));
+            int partSuppliers = 0;
+            int pickupRunners = 0;
+            int flexibleWorkers = 0;
+
+            for (int i = 0; i < workers.Length; i++)
+            {
+                switch (workers[i].Assignment)
+                {
+                    case WorkerController.WorkerAssignment.PartSupplier:
+                        partSuppliers++;
+                        break;
+                    case WorkerController.WorkerAssignment.PickupRunner:
+                        pickupRunners++;
+                        break;
+                    default:
+                        flexibleWorkers++;
+                        break;
+                }
+            }
+
+            return "Roles F:" + flexibleWorkers + " / P:" + partSuppliers + " / R:" + pickupRunners;
         }
 
         private AssemblyBench[] GetActiveAssemblyBenches()
@@ -205,6 +315,29 @@ namespace TinyFactory.Workers
             }
 
             return activeBenches.ToArray();
+        }
+
+        private float GetWorkerMoveSpeedForIndex(int workerIndex)
+        {
+            float equipmentMultiplier = workerIndex == 0 && supportBonusSlots != null
+                ? supportBonusSlots.EquipmentMoveSpeedMultiplier
+                : 1f;
+            float boostMultiplier = factoryBoostManager != null ? factoryBoostManager.MoveSpeedMultiplier : 1f;
+            return WorkerMoveSpeed * equipmentMultiplier * boostMultiplier;
+        }
+
+        private float GetWorkerAssemblySpeedMultiplierForIndex(int workerIndex)
+        {
+            float baseMultiplier = workerIndex == 0 && supportBonusSlots != null
+                ? supportBonusSlots.EquipmentAssemblySpeedMultiplier
+                : 1f;
+            float boostMultiplier = factoryBoostManager != null ? factoryBoostManager.AssemblySpeedMultiplier : 1f;
+            return baseMultiplier * boostMultiplier;
+        }
+
+        private void HandleBoostStateChanged()
+        {
+            ApplyWorkerStats();
         }
     }
 }

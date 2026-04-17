@@ -2,6 +2,146 @@
 
 이 문서는 프로젝트의 업무 연속성을 유지하기 위한 기록 파일이다. 새 세션에서는 `docs/99-session-continuity-guide.md`를 먼저 읽고, 이어서 이 문서를 읽어 최근 결정과 다음 작업을 확인한다.
 
+## 2026-04-17
+
+### 작업 요약
+
+- 속도 우선 튜닝 패스로 전환해, 새 메타 시스템 추가보다 돈 증가 속도와 보상 간격 체감을 먼저 끌어올리기로 했다.
+- `ProductProgressionManager`는 기본 출고 가치와 성장률을 올리고, 제품 레벨업 비용을 낮춰 초중반 단가 상승이 더 빨리 체감되게 바꿨다.
+- `UpgradeManager`, `WorkerManager`, `FacilityManager`는 스테이션 업그레이드, 첫 직원, 작업자 처리량, 두 번째 조립대, `Dispatch Rack` 비용을 전반적으로 낮추고 효율은 높여 다음 구매가 더 빨리 오게 조정했다.
+- `StageGoalManager`의 생산 보상 목표는 `Output 48 -> 128` 구간으로 압축해 `Basic -> Advanced -> Premium` 상자가 훨씬 짧은 간격으로 떨어지게 만들었다.
+- `EquipmentManager`의 레벨 스케일은 단계당 `+75%`로 올려, 장비 조합 직후 상승폭이 더 크게 보이게 조정했다.
+- 현재 열린 Unity 기준 다음 확인 항목은 이 숫자 압축이 실제 플레이에서 더 빠른 성장 템포와 더 잦은 보상 도착으로 느껴지는지 보는 것이다.
+
+- 마일스톤 27 첫 구현으로 `EquipmentManager`에 `Head / Body / Tool` 부위별 `Blueprint` 조각 카운트를 추가했다.
+- `Premium Box`를 열면 해당 `Rare` 장비와 함께 같은 부위 `Blueprint` 조각 1개가 같이 누적되고, 마지막 메시지도 `Body BP 1/3` 같은 진행도를 함께 보여 주도록 바꿨다.
+- `Worker Gear`는 이제 `Epic Prep / Head BP x/3 / Body BP x/3 / Tool BP x/3`와 `Blueprint Ready n/3` 요약을 같이 보여 준다.
+- 아직 `Epic` 제작 자체는 열지 않았고, 이번 단계는 후반 보상 루프가 장비 수집에서 끝나지 않고 다음 제작 단계로 자연스럽게 이어지게 만드는 준비 작업이다.
+- 현재 열린 Unity 기준 다음 확인 항목은 `Premium Box` 개봉 시 해당 부위 `Blueprint` 진행도가 실제로 함께 올라가는지 보는 것이다.
+
+- 마일스톤 26 첫 구현으로 `StageGoalManager`에 `Premium Box` 카운트와 소비 구조를 추가했다.
+- 후반 생산 목표 `Output 192/198/204`는 이제 `Premium Box`를 지급하고, HUD 보상 요약도 `Basic / Advanced / Premium` 3종 상자를 모두 표시한다.
+- `EquipmentManager`에는 `Premium Box` 개봉 흐름과 `Rare` 3종 중심 시퀀스를 추가했고, `Worker Gear`에서 `Open Premium Box` 버튼과 다음 보상 미리보기를 같이 볼 수 있게 만들었다.
+- 아직 `Epic`이나 설계도는 넣지 않았고, `Premium Box`는 현 단계에서는 `Rare` 장비 루프를 더 빠르게 밀어 주는 상위 보상 축으로만 사용한다.
+- 현재 열린 Unity 기준 다음 확인 항목은 `Premium Box`가 실제로 후반 목표에서 지급되고, 개봉 시 `Rare` 3종으로 이어지는지 보는 것이다.
+
+- 마일스톤 25 첫 구현으로 `EquipmentManager`의 장비 정의를 다중 효과 구조로 확장했다.
+- `Rare` 장비 3종은 이제 주 효과 외에 보조 효과 1개를 더 가져, `Quality Headset = Pickup + Assembly`, `Servo Frame = Move + Pickup`, `Precision Rig = Assembly + Move` 조합으로 동작한다.
+- 장비 슬롯, 인벤토리, 다음 레벨 미리보기 문자열도 복수 효과를 함께 표시하도록 바뀌어, `Rare` 장비가 `Uncommon`보다 구조적으로 한 단계 높아 보이게 정리했다.
+- 현재 열린 Unity 기준 다음 확인 항목은 `Rare` 장착 직후 총합 보너스 문자열과 실제 생산 루프 체감이 같이 올라가는지 보는 것이다.
+
+- 마일스톤 24 첫 구현으로 `StageGoalManager`에 생산 보상 완료 수와 다음 목표까지 남은 출고 수를 요약하는 문자열을 추가했다.
+- `HudController`는 이 요약을 `Reward Loop` 줄로 표시해, 후반 `Output 132+` 구간에서도 현재 몇 번째 생산 보상까지 먹었는지 바로 읽을 수 있게 보강했다.
+- `EquipmentManager`에는 `Basic Box`, `Advanced Box`의 다음 장비와 희귀도 구간을 보여 주는 미리보기 문자열을 추가했다.
+- `Worker Gear`는 이제 `Basic next: ...`, `Advanced next: ...`를 같이 보여 주므로, `Advanced Box`가 아직 `Uncommon` 구간인지 이미 `Rare` 구간에 들어갔는지 HUD만 보고 판단할 수 있다.
+- 현재 열린 Unity 기준으로는 컴파일 반영만 확인됐고, 다음 수동 확인 항목은 `Rare` 루프와 새 HUD 문자열이 실제 플레이 흐름에서 자연스럽게 읽히는지 보는 것이다.
+
+- 세션 작업 지침을 보강해, 앞으로는 현재 열려 있는 Unity Editor와 기존 `unityMCP` 세션을 우선 재사용하고, 새 Unity 창이나 batch/headless Unity는 꼭 필요할 때만 쓰도록 기준을 고정했다.
+- 사용자의 현재 선호를 `긴 작업 묶음 유지`, `초기 개발 우선`, `불필요한 Unity 승인 창 최소화`로 문서에 반영했다.
+- 마일스톤 23 첫 구현으로 `StageGoalManager`의 후반 생산 목표를 `Output 186`까지 확장해 `Advanced Box`를 총 `18개` 얻을 수 있게 만들었다.
+- 이 확장으로 `Advanced Box` 첫 `9개`는 `Uncommon` 루프, 다음 `9개`는 `Rare` 루프로 이어져 `Rare` 장비 3종도 각각 `3개`씩 누적 가능한 구간을 열었다.
+- 마일스톤 22 첫 구현으로 `EquipmentManager`에 `Quality Headset / Servo Frame / Precision Rig` 3종 `Rare` 장비를 추가했다.
+- `Advanced Box` 시퀀스는 `Uncommon` 9개 이후 `Rare` 9개가 이어지도록 확장했고, 장비 슬롯/인벤토리 요약에는 희귀도 라벨을 노출하도록 보강했다.
+- 장비 인벤토리 정렬도 같은 슬롯 안에서는 더 높은 희귀도가 먼저 보이도록 바꿔 `Rare` 장비가 추가돼도 HUD 가독성이 무너지지 않게 정리했다.
+- 현재 열린 Unity 기준 런타임 수동 확인이 아직 남아 있으므로, 다음 확인 항목은 `Advanced Box` 후반 개봉에서 `Rare` 장비가 실제로 등장하고 `Lv 2` 조합 가능 수량까지 누적되는지 보는 것이다.
+
+- 마일스톤 21 첫 구현으로 `StageGoalManager`의 후반 생산 목표를 `Output 132`까지 확장해 `Advanced Box`를 총 `9개` 얻을 수 있게 만들었다.
+- 이 구조로 `Advanced Box` 시퀀스 한 바퀴를 모두 돌리면 `Lift Harness / Smart Driver / Scan Visor`를 각각 `3개`씩 확보할 수 있어, `Uncommon` 장비 3종을 모두 `Lv 2` 조합 가능한 수량까지 누적할 수 있게 됐다.
+- 현재 기준 다음 확인 항목은 열린 Unity에서 실제로 `Advanced Box` 반복 개봉 후 `Uncommon` 조합 버튼이 각 부위에서 활성화되는지 보는 것이다.
+- 마일스톤 20 구현으로 `StageGoalManager`에 `Advanced Box` 카운트와 후반 생산 목표 `Output 84/90/96` 보상을 추가했다.
+- `EquipmentManager`에는 `Advanced Box` 개봉 흐름과 `Uncommon` 중심 시퀀스 `Lift Harness / Smart Driver / Scan Visor`를 추가해 `Basic Box`와 보상 성격을 분리했다.
+- `HudController`의 `Worker Gear`에는 `Open Advanced Box` 버튼과 `Basic xN / Advanced xN` 보상 요약을 표시하도록 확장했다.
+- 현재 열린 Unity `Editor.log` 기준으로는 스크립트 컴파일 에러 없이 도메인 리로드와 에셋 리프레시까지 진행됐고, 마일스톤 20은 런타임 수동 확인만 남은 상태다.
+- 마일스톤 19 구현으로 `StageGoalManager`의 추가 생산 보상을 `Output 50/55/60/66/72/78`까지 확장해 공통 `Body/Tool/Head` 장비 3종을 모두 상자 루프 안에서 검증 가능하게 했다.
+- `AssemblyBench`는 마지막 완료 조립 시간과 완료 횟수를 기록하게 바꿨고, `PickupCounter`는 마지막 출고 금액과 주문 라벨을 기록하게 바꿔 장비 효과를 실제 런타임 수치로 남길 수 있게 했다.
+- `TinyFactoryMilestone16PlaytestRunner`는 `Body/Tool/Head` 3부위를 순차 장착/조합하고, `Body` 이동 속도, `Tool` 조립 시간, `Head` 출고 금액을 상태 파일에 함께 기록하도록 크게 확장했다.
+- 최종 배치 검증에서 `Body`는 `1.650 -> 1.782 -> 1.848`, `Tool`은 `2.500 -> 2.273 -> 2.174`, `Head`는 `Rush 18 -> 19`를 기록했고, 종료 시점에는 `Head/Body/Tool` 모두 `Lv 2` 장착 상태였다.
+- 마일스톤 18 구현으로 `StageGoalManager`에 `Output 50 -> Basic Box +1` 생산 보상 구조를 추가했고, HUD에 현재 생산 보상 진행도를 함께 표시하도록 확장했다.
+- 첫 구현에서 생산 보상이 `All Clear` 이후 동작하지 않는 문제는 `StageGoalManager.Update()`가 스테이지 종료 후 바로 빠져나가던 early return 때문이었고, 이를 제거해 추가 보상이 정상 지급되게 고쳤다.
+- 배치 재검증 결과 `completed=50`, `productionRewardCount=1`, `toolLv1Copies=1`, `equipmentMessage=Opened Basic Box: Hand Driver.`를 확인해 스테이지 클리어 이후에도 장비 획득 루프가 이어지는 것을 검증했다.
+- 마일스톤 17 검증에서는 `equippedBonus=Move +12% / Pickup +0% / Assembly +0%`, `bodyLv2Preview=Next Lv 3 / Move +16%`, `bodyLv2CombineLabel=1/3`가 상태 파일에 기록돼 HUD 표기용 문자열이 실제 런타임에서도 정상 계산됨을 확인했다.
+- 같은 턴에서 `TinyFactoryMilestone16PlaytestRunner`는 상태 변화가 있을 때만 로그를 찍도록 바꿔, 이전처럼 `running` 로그가 매 프레임 반복되지 않게 정리했다.
+- 마일스톤 17 첫 구현으로 `EquipmentManager`에 현재 장착 총합 보너스 요약과 각 장비 그룹의 `Next Lv` 미리보기 문자열을 추가했다.
+- 장비 그룹 인벤토리는 `Head -> Body -> Tool` 순으로 정렬되게 바꿨고, 조합 버튼 라벨도 `Combine` 고정 대신 `2/3`, `Lv 2`, `Max`처럼 현재 상태가 보이도록 정리했다.
+- `HudController`의 `Worker Gear` 구역에는 `Equipped bonus: Move / Pickup / Assembly` 총합과 각 그룹의 다음 레벨 효과를 함께 표시하도록 확장했다.
+- 이번 턴에서는 장비 기본 수치 자체는 바꾸지 않고, 먼저 현재 값이 플레이어에게 충분히 읽히는지 검증한 뒤 밸런스 수치 확정으로 넘어가기로 했다.
+- 마일스톤 16 검증을 위해 처음에는 PlayMode 테스트 asmdef를 추가했지만, 현재 프로젝트가 기본 `Assembly-CSharp` 구조라 test asmdef에서 `TinyFactory.*` 런타임 네임스페이스를 참조하지 못하는 문제를 확인했다.
+- 이에 따라 PlayMode 테스트 asmdef 방식은 제거했고, 대신 `TinyFactoryMilestone16PlaytestRunner`를 배치 모드에서도 종료 코드와 상태 파일을 남기도록 보강했다.
+- 원본 프로젝트는 열어 둔 Unity Editor와 더티 씬 상태를 유지한 채, `unity/TinyFactoryPrototype_BatchTest/` 복제본을 만들어 배치 검증 전용 프로젝트로 사용했다.
+- 복제본 배치 런에서 `Basic Box` 3개 획득 -> `Work Apron` 3개 누적 -> `Work Apron Lv 2` 조합 -> 자동 재장착까지 완료되는 흐름을 검증했다.
+- 검증 결과 첫 작업자 기준 속도 `1.650`, `Work Apron Lv 1` 장착 시 `1.782`, `Work Apron Lv 2` 조합 후 `1.848`로 상승해 레벨별 보너스 재적용이 정상 동작함을 확인했다.
+- 같은 배치 런 종료 시점 상태는 `simTime=335.933`, `money=337`, `completed=45`, `workers=3`, `productLevel=3`, `activeBenches=2`, `dispatchRack=1`, `stage=All Clear`, `ownedItems=1`, `lv2Copies=1`이었다.
+- 이 결과로 마일스톤 16은 구현과 재테스트까지 완료로 닫을 수 있게 됐다.
+
+## 2026-04-16
+
+### 작업 요약
+
+- 마일스톤 16 첫 구현으로 `EquipmentManager`의 장비 인벤토리에 `Level` 데이터를 추가하고, 같은 장비가 여러 개 쌓이면 `같은 장비 + 같은 레벨` 기준 그룹으로 보이도록 정리했다.
+- `Basic Box` 결정적 지급 순서를 `같은 장비 3개씩` 먼저 나오도록 바꿔 장비 조합 검증이 빠르게 가능하게 했다.
+- `EquipmentManager`에 `같은 장비 3개 -> 같은 장비 Lv +1` 조합 로직을 추가했고, 장착 중 장비가 재료에 포함되면 결과 장비를 같은 슬롯에 자동 재장착하도록 처리했다.
+- 장비 레벨 효과는 기본 수치에서 레벨당 `+50%`씩 증가하도록 연결해 `Body`, `Head`, `Tool` 강화 결과가 각각 이동 속도, 출고 가치, 조립 속도 보너스에 다시 반영되게 했다.
+- `HudController`의 `Worker Gear` 인벤토리를 개별 인스턴스 나열에서 그룹 인벤토리로 바꾸고, 각 그룹에 `Equip`과 `Combine` 버튼, `Ready x3` 상태를 표시하도록 확장했다.
+- 현재 확인 범위에서는 Unity 리프레시 후 `EquipmentManager.cs`, `HudController.cs` 재임포트와 MCP 브리지 재연결만 기록됐고, `Editor.log` 기준 프로젝트 스크립트 컴파일 에러는 보이지 않았다.
+- 다만 플레이 모드에서 `상자 개봉 -> 중복 누적 -> 조합 -> 강화 효과 적용`을 끝까지 다시 보는 마일스톤 16 재테스트는 아직 남아 있다.
+
+- README 기준으로 `unityMCP` 등록 상태와 `127.0.0.1:8080` 리스닝 상태를 다시 확인했다.
+- Unity Editor 자동 시작만으로는 MCP HTTP 서버가 안정적으로 붙지 않아, `uvx --from "mcpforunityserver==9.6.6" mcp-for-unity --transport http --http-url http://localhost:8080 --project-scoped-tools`로 서버를 직접 기동했다.
+- Unity Editor 브리지가 다시 붙은 뒤 `mcpforunity://instances`가 `1`로 복구된 것을 확인했다.
+- 마일스톤 10 구현으로 `ProductProgressionManager`를 추가했다.
+- `ProductProgressionManager`가 제품 레벨, 픽업 가치, 레벨업 비용, 마지막 메시지를 관리하도록 구성했다.
+- `PickupCounter`가 고정 판매가 대신 제품 레벨 기반 `CurrentPickupValue`를 사용하도록 연결했다.
+- `UpgradeManager`의 기존 `Sale Value` 흐름을 제품 레벨업 흐름으로 전환했다.
+- `HudController`에 `Level Power Bank` 버튼, 제품 레벨/가치 표시, 추천 목표 순서 `첫 직원 -> 제품 Lv 2 -> 제품 Lv 3 -> 두 번째 조립대 -> 작업자 처리량`을 반영했다.
+- 마일스톤 10 재테스트를 위해 `TinyFactoryPlaytestRunner` 에디터 스크립트를 추가했다.
+- 5분 자동 테스트에서 첫 픽업 `9.2초`, 첫 직원 `107.6초`, `Power Bank Lv 2` `127.2초`, `Power Bank Lv 3` `155.6초`, 두 번째 조립대 `194.0초`를 기록했다.
+- 같은 테스트에서 5분 후 보유 금액 `85`, 픽업/출고 완료 `29회`, 제품 레벨 `3`, 픽업 가치 `10`, 활성 조립대 `2/2`를 확인했다.
+- 두 번째 조립대 구매 후 60초 동안 추가 보유 금액 `+25`, 추가 픽업/출고 완료 `+6`을 기록해 제품 레벨업이 자동화 구매 압축에 실제로 기여함을 확인했다.
+- 플레이테스트 로그 `docs/26-playtest-2026-04-16-m10.md`와 검증 스크린샷 `unity/TinyFactoryPrototype/Assets/Screenshots/Prototype_01_Workshop_M10_ProductLevel_ReTest.png`를 추가했다.
+- 추가 계측에서 주문 생성보다 작업자 타깃 충돌과 이동 효율이 다음 병목에 더 가깝다고 판단했다.
+- `AssemblyBench`에 부품 투입/완성품 회수 예약을 추가하고, `WorkerController`가 예약을 기준으로 중복 타깃을 피하도록 보강했다.
+- 같은 자동 구매 규칙으로 5분 테스트를 다시 돌려 보유 금액 `105`, 픽업/출고 완료 `31회`, 두 번째 조립대 구매 후 60초 추가 보유 금액 `+45`, 추가 완료 `+8`을 기록했다.
+- 후속 보강으로 `AssemblyBench.IdleDuration`, `ProductReadyDuration`, `RemainingAssemblySeconds`를 추가하고, `WorkerController`가 오래 비어 있거나 오래 완성품이 쌓인 조립대, 그리고 가장 빨리 끝날 조립대를 우선 보도록 확장했다.
+- 작업 흐름을 마일스톤 단위로 다시 정리하고 `docs/18-prototype-task-board.md`에 마일스톤 11~15 초안을 추가했다.
+- 마일스톤 11 첫 구현으로 `WorkerController`에 `Flexible`, `PartSupplier`, `PickupRunner` 역할을 추가하고, `WorkerManager`가 작업자 수에 따라 역할을 자동 배정하게 했다.
+- HUD 작업자 표시를 `Roles F / P / R` 요약으로 확장해 현재 역할 분포를 바로 볼 수 있게 했다.
+- 역할 분리 후 재검증에서 2명 체제는 `PartSupplier 1`, `PickupRunner 1`로 정상 분리됐고, 현재 5분 자동 테스트 기준선은 보유 금액 `135`, 완료 `30`, 작업자 `2`, 활성 조립대 `2`, 제품 레벨 `3`이다.
+- `PartSupplier`가 부품을 든 채 완료 직전 조립대 앞에서 기다리게 하는 실험은 같은 조건에서 완료 수가 줄어 보류했다.
+- `PickupRunner`가 회수 일이 없을 때 부품 투입을 돕는 fallback 실험도 개선을 만들지 못해 되돌렸다.
+- 이번 세션 기준 마일스톤 11은 역할 분리, 예약, 완료 임박 조립대 선대기까지만 유지하고 추가 fallback 규칙은 보류한다.
+- 재검증에서 프로젝트 스크립트 기준 Console 에러/경고는 0건이었고, Unity MCP 패키지의 WebSocket 초기화 경고 1건만 반복 확인됐다.
+- 마일스톤 12 첫 구현으로 `OrderCounter`를 `Standard / Rush / Bulk` 주문 순환 구조로 확장하고, `Rush > Bulk > Standard` 우선순위를 적용했다.
+- `WorkerController`가 주문 예약 시 보너스 정보를 함께 들고 가고, `PickupCounter`가 제품 가치 외에 주문 보너스를 같이 정산하도록 연결했다.
+- `HudController`에 현재 주문 상태와 다음 주문 요약을 표시하고, `Rush`나 `Bulk` 주문 완료 시 플로팅 피드백에 주문 라벨을 함께 노출했다.
+- 같은 자동 구매 규칙으로 5분 테스트를 두 번 다시 돌려 보유 금액 `149`, 완료 `30`, 주문 보너스 수익 `11`, 대기 주문 `2`, 활성 주문 `2`가 같은 값으로 재현되는 것을 확인했다.
+- `PickupCounter`를 즉시 정산이 아니라 `Dispatch` 큐를 거쳐 정산되는 구조로 확장하고, 주문 타입별 출고 시간 `Standard 0.55초 / Rush 0.30초 / Bulk 0.80초`를 추가했다.
+- 작업자는 픽업 카운터에 제품을 내려놓고 바로 복귀하고, 카운터가 `Dispatching -> Complete`를 처리한 뒤 돈과 완료 수를 확정하도록 분리했다.
+- 같은 자동 구매 규칙으로 5분 테스트를 두 번 다시 돌려 보유 금액 `149`, 완료 `30`, 주문 보너스 수익 `11`, 출고 큐 `0`, 현재 출고 상태 `Idle`이 같은 값으로 재현되는 것을 확인했다.
+- 이번 마일스톤 12 결과는 처리량을 깨지 않고 주문/출고 구조를 한 단계 늘린 상태이며, 다음 단계는 이 출고 구조를 실제 보조 설비나 후속 공정과 연결할지 판단하는 것이다.
+- 마일스톤 13 첫 설비 후보를 `Dispatch Rack`으로 정하고, `FacilityManager`에서 구매 가능하도록 연결했다.
+- `Dispatch Rack` 구매 시 `OrderCounter`의 동시 주문 수와 주문 생성 간격을 보강하고, `PickupCounter`의 출고 속도와 출고당 추가 수익을 함께 높이도록 구성했다.
+- HUD에 `Build Dispatch Rack` 버튼과 설비 상태 표시를 추가하고, 구매 시 픽업 카운터 옆에 `Dispatch Rack` 플레이스홀더가 보이도록 했다.
+- 다만 5분 자동 테스트에서 `Dispatch Rack` 조기 구매 루트는 `191.6초` 구매, `215.6초` 두 번째 조립대, 최종 보유 금액 `144`, 완료 `30`으로 마일스톤 12 기준선 `149 / 30`을 넘지 못했다.
+- 현재 판단은 `Dispatch Rack`이 기능적으로는 맞지만 짧은 구간 투자 효율은 아직 부족하다는 쪽이며, 다음 턴에서 수익성 조정이나 대체 설비 여부를 다시 본다.
+- `FacilityManager`에서 `Dispatch Rack` 기본값을 코드 기준으로 정규화해 숨은 씬 직렬화 값이 테스트를 흔들지 않도록 고쳤다.
+- 정규화 후 런타임 기준 `Dispatch Rack` 값은 `cost 10 / capacity +1 / interval x0.85 / speed x0.8 / bonus +4`로 고정됐고, 조기 구매 루트 5분 자동 테스트 2회가 모두 `145.999초` 구매, `177.999초` 두 번째 조립대, 보유 금액 `214`, 완료 `33`으로 재현됐다.
+- 이 결과로 마일스톤 13은 `Dispatch Rack`을 초기 추천 구매 설비로 유지하는 쪽으로 정리했다.
+- 마일스톤 14 구현으로 `StageGoalManager`를 추가해 `Workshop 1`, `Workshop 2`, `Workshop 3` 스테이지 목표를 런타임에서 추적하도록 만들었다.
+- `Workshop 1` 완료 조건은 `출고 30 / 작업자 2 / 조립대 2`, 보상은 `Basic Box 1개`로 확정했고, `Workshop 2`부터는 `Dispatch Rack`까지 목표에 포함되도록 연결했다.
+- `HudController`에 현재 스테이지 진행도와 누적 `Basic Box` 수를 표시하고, 마지막 보상 메시지를 함께 노출하도록 확장했다.
+- 같은 5분 자동 테스트에서 `Workshop 1` 클리어 후 `Basic Box x1`이 지급되고 현재 스테이지가 `Workshop 2`로 넘어간 상태 `Dispatch 33/36 / Workers 2/2 / Benches 2/2 / Rack 1/1`를 확인했다.
+- 프로젝트 스크립트 기준 Console 에러/경고는 0건이었고, 새 `StageGoalManager` 스크립트는 전체 리프레시 후 `.meta`가 생성된 뒤 정상 컴파일됐다.
+- 마일스톤 15 구현으로 `EquipmentManager`를 추가하고, `Basic Box`를 열어 장비를 획득하는 최소 장비 인벤토리/장착 흐름을 런타임 매니저로 연결했다.
+- 첫 장비 풀은 `Head`, `Body`, `Tool` 3부위 기준으로 `Common / Uncommon` 장비를 하드코딩했고, `Basic Box`는 프로토타입 검증용으로 결정적 순서 `Body -> Tool -> Head -> ...`로 장비를 지급하도록 구성했다.
+- `HudController`에 `Worker Gear` 구역을 추가해 장착 슬롯 3개, `Open Basic Box` 버튼, 보유 장비 목록, `Equip` 버튼을 표시하도록 확장했다.
+- `SupportBonusSlots`를 실제 장비 보너스 적용 레이어로 바꾸고, `Body`는 첫 작업자 이동 속도, `Head`는 출고 가치 배율, `Tool`은 부품 투입 시 조립 속도 배율에 연결했다.
+- `WorkerManager`가 첫 작업자를 고유 작업자로 취급해 장착된 `Body`/`Tool` 보너스를 반영하고, `PickupCounter`는 장착된 `Head` 보너스를 이후 출고 금액 계산에 반영하도록 바꿨다.
+- 5분 자동 테스트로 `Workshop 1` 클리어 후 `Basic Box`를 열고 `Work Apron`을 `Body` 슬롯에 장착했을 때, 첫 작업자 이동 속도가 `1.8975`에서 `2.0493`으로 증가하는 것을 확인했다.
+- 같은 검증에서 장비 인벤토리 `1개`, `Body: Work Apron / Move +8%`, `Basic Box 0개`, 현재 스테이지 `Workshop 2`가 함께 확인됐고, 프로젝트 스크립트 기준 Console 에러/경고는 0건이었다.
+- 오늘 MCP 재연결에서 시간을 썼던 경험을 반영해 `README.md`와 `docs/99-session-continuity-guide.md`의 Unity MCP 지침을 강화했다.
+- 새 지침은 `8080 LISTENING` 확인, Codex 등록 확인, 새 세션 재시작 원칙, 자동 시작 실패 시 `UvxPath`와 Unity 메뉴 상태 확인, 최후 복구 순서를 분리해서 적어 다음 세션에서 바로 따라갈 수 있게 정리했다.
+- 오늘 마감 기준 다음 시작점은 `README.md`의 MCP 체크리스트를 먼저 밟고, 이어서 마일스톤 16 장비 조합 재테스트를 진행하는 것이다.
+
 ## 2026-04-15
 
 ### 작업 요약

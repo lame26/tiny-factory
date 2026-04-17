@@ -23,6 +23,11 @@ namespace TinyFactory.Economy
             MoneyChanged?.Invoke(currentMoney);
         }
 
+        public void DebugAddMoney(int amount)
+        {
+            AddMoney(amount);
+        }
+
         public bool CanSpend(int amount)
         {
             return amount >= 0 && currentMoney >= amount;

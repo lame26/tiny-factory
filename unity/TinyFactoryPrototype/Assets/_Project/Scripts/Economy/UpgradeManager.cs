@@ -10,12 +10,11 @@ namespace TinyFactory.Economy
         [SerializeField] private StationSelectionController selectionController;
         [SerializeField] private AssemblyBench assemblyBench;
         [SerializeField] private PickupCounter pickupCounter;
-        [SerializeField] private int stationLevelBaseCost = 10;
-        [SerializeField] private float stationLevelCostGrowth = 1.32f;
-        [SerializeField] private int assemblySpeedBaseCost = 15;
-        [SerializeField] private float assemblySpeedCostGrowth = 1.45f;
-        [SerializeField] private int saleValueBaseCost = 20;
-        [SerializeField] private float saleValueCostGrowth = 1.45f;
+        [SerializeField] private ProductProgressionManager productProgressionManager;
+        [SerializeField] private int stationLevelBaseCost = 8;
+        [SerializeField] private float stationLevelCostGrowth = 1.22f;
+        [SerializeField] private int assemblySpeedBaseCost = 12;
+        [SerializeField] private float assemblySpeedCostGrowth = 1.32f;
         [SerializeField] private string lastMessage = "Upgrades ready";
 
         public int StationLevelCost
@@ -39,12 +38,19 @@ namespace TinyFactory.Economy
                     return UpgradeCostCalculator.Calculate(stationLevelBaseCost, stationLevelCostGrowth, selectedPickupCounter.StationLevel);
                 }
 
+                PackingStation selectedPackingStation = GetSelectedComponent<PackingStation>();
+                if (selectedPackingStation != null)
+                {
+                    return UpgradeCostCalculator.Calculate(stationLevelBaseCost, stationLevelCostGrowth, selectedPackingStation.StationLevel);
+                }
+
                 return UpgradeCostCalculator.Calculate(stationLevelBaseCost, stationLevelCostGrowth, 1);
             }
         }
 
         public int AssemblySpeedCost => UpgradeCostCalculator.Calculate(assemblySpeedBaseCost, assemblySpeedCostGrowth, assemblyBench != null ? assemblyBench.AssemblySpeedLevel : 1);
-        public int SaleValueCost => UpgradeCostCalculator.Calculate(saleValueBaseCost, saleValueCostGrowth, pickupCounter != null ? pickupCounter.SaleValueLevel : 1);
+        public int ProductLevelCost => productProgressionManager != null ? productProgressionManager.LevelUpCost : 0;
+        public int SaleValueCost => ProductLevelCost;
         public string LastMessage => lastMessage;
 
         private void Awake()
@@ -67,6 +73,11 @@ namespace TinyFactory.Economy
             if (pickupCounter == null)
             {
                 pickupCounter = FindFirstObjectByType<PickupCounter>();
+            }
+
+            if (productProgressionManager == null)
+            {
+                productProgressionManager = ProductProgressionManager.GetOrCreate();
             }
         }
 
@@ -106,6 +117,20 @@ namespace TinyFactory.Economy
                 return true;
             }
 
+            PackingStation selectedPackingStation = GetSelectedComponent<PackingStation>();
+            if (selectedPackingStation != null)
+            {
+                int cost = UpgradeCostCalculator.Calculate(stationLevelBaseCost, stationLevelCostGrowth, selectedPackingStation.StationLevel);
+                if (!TrySpend(cost))
+                {
+                    return false;
+                }
+
+                selectedPackingStation.UpgradeStationLevel();
+                lastMessage = "Packing Station leveled up. Next: " + MoneyFormatter.Format(StationLevelCost) + ".";
+                return true;
+            }
+
             string selectedName = selectionController.CurrentSelectionName;
             lastMessage = selectedName + " has no station level upgrade yet.";
             return false;
@@ -125,14 +150,20 @@ namespace TinyFactory.Economy
 
         public bool TryUpgradeSaleValue()
         {
-            if (!TrySpend(SaleValueCost))
+            return TryLevelUpProduct();
+        }
+
+        public bool TryLevelUpProduct()
+        {
+            if (productProgressionManager == null)
             {
+                lastMessage = "Product progression missing.";
                 return false;
             }
 
-            pickupCounter.UpgradeSaleValue();
-            lastMessage = "Pickup value upgraded. Next: " + MoneyFormatter.Format(SaleValueCost) + ".";
-            return true;
+            bool upgraded = productProgressionManager.TryLevelUpProduct();
+            lastMessage = productProgressionManager.LastMessage;
+            return upgraded;
         }
 
         private bool TrySpend(int cost)

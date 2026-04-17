@@ -15,3 +15,10 @@ unity/**/.vscode/
 
 # Local logs
 *.log
+
+# Local Unity session artifacts
+unity/TinyFactoryPrototype_BatchTest/
+unity/TinyFactoryPrototype/Assets/_Recovery/
+unity/TinyFactoryPrototype/Assets/_Recovery.meta
+unity/TinyFactoryPrototype/Assets/_Project/Tests/
+unity/TinyFactoryPrototype/Assets/_Project/Tests.meta

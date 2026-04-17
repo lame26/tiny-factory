@@ -16,6 +16,12 @@ namespace TinyFactory.Stations
         public string DisplayName => displayName;
         public string StatusText => statusProvider != null ? statusProvider.StatusText : stationRole;
 
+        public void Configure(string targetDisplayName, string targetStationRole)
+        {
+            displayName = string.IsNullOrWhiteSpace(targetDisplayName) ? displayName : targetDisplayName;
+            stationRole = string.IsNullOrWhiteSpace(targetStationRole) ? stationRole : targetStationRole;
+        }
+
         private void Awake()
         {
             statusProvider = GetComponent<IStationStatusProvider>();
